@@ -135,14 +135,14 @@ export const LAZORKIT_CONFIG = {
 
 ## Acceptance Criteria
 
-- [ ] User can click "Connect Wallet" button
-- [ ] Modal shows Lazorkit + any installed browser wallets
-- [ ] Selecting Lazorkit triggers passkey prompt (FaceID/TouchID/Windows Hello)
-- [ ] Selecting traditional wallet opens that wallet's popup
-- [ ] Connected wallet address displays in header (truncated)
-- [ ] Can disconnect wallet
-- [ ] Session persists on page refresh (autoConnect works)
-- [ ] No console errors related to Buffer or SSR
+- [x] User can click "Connect Wallet" button
+- [x] Modal shows Lazorkit + any installed browser wallets
+- [x] Selecting Lazorkit triggers passkey prompt (FaceID/TouchID/Windows Hello)
+- [x] Selecting traditional wallet opens that wallet's popup
+- [x] Connected wallet address displays below input (full address, greyed)
+- [x] Can disconnect wallet (logout icon)
+- [x] Session persists on page refresh (autoConnect works)
+- [x] No console errors related to Buffer or SSR
 
 ---
 

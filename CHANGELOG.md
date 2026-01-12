@@ -13,9 +13,13 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - README with project overview
 - Issue tracking system (`docs/issues/`)
 - `001_wallet_connection.md` - Wallet connection spec with Lazorkit + Wallet Adapter
+- **Wallet connection with Lazorkit passkey + Solana Wallet Adapter**
+  - `WalletProvider` with Lazorkit registration
+  - `ConnectWallet` component (wallet icon → address + logout)
+  - Buffer polyfill for Next.js SSR
 
 ### Planned
-- [ ] Wallet connection (Lazorkit passkey + traditional wallets)
+- [x] Wallet connection (Lazorkit passkey + traditional wallets)
 - [ ] Transaction parser (Jupiter swaps)
 - [ ] P&L card component (animated)
 - [ ] Share/export functionality
