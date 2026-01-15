@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PNLDOTFUN",
+  title: "PNL.FUN",
   description: "Trading terminal style PnL visualizer",
 };
 
