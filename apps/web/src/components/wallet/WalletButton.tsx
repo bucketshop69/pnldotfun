@@ -47,23 +47,26 @@ export function WalletButton() {
 
     return (
       <>
-        <button
-          onClick={openDetails}
-          className="flex items-center gap-2 px-3 py-2 bg-surface rounded-xl border border-white/10 hover:border-accent/30 transition-colors cursor-pointer"
-        >
-          {wallet?.adapter.icon ? (
-            <img
-              src={wallet.adapter.icon}
-              alt={wallet.adapter.name}
-              className="w-5 h-5 rounded"
-            />
-          ) : (
-            <Wallet size={18} className="text-accent" />
-          )}
-          <span className="font-mono text-sm text-text-primary">
-            {truncatedAddress}
-          </span>
-        </button>
+        <div className="flex flex-col items-center gap-2">
+          <button
+            onClick={openDetails}
+            className="flex items-center gap-2 px-3 py-2 bg-surface rounded-xl border border-white/10 hover:border-accent/30 transition-colors cursor-pointer"
+          >
+            {wallet?.adapter.icon ? (
+              <img
+                src={wallet.adapter.icon}
+                alt={wallet.adapter.name}
+                className="w-5 h-5 rounded"
+              />
+            ) : (
+              <Wallet size={18} className="text-accent" />
+            )}
+            <span className="font-mono text-sm text-text-primary">
+              {truncatedAddress}
+            </span>
+          </button>
+          <span className="text-xs text-text-muted">Click to Transfer or Swap</span>
+        </div>
 
         <WalletDetailsModal isOpen={isDetailsOpen} onClose={closeDetails} />
       </>
