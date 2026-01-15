@@ -77,17 +77,19 @@ export function WalletButton() {
         onClick={openModal}
         disabled={connecting}
         className="
-          p-2
-          text-text-muted
-          hover:text-accent
-          transition-colors
-          rounded-lg
-          hover:bg-white/5
+          px-6 py-3
+          bg-white
+          text-primary
+          font-mono font-bold
+          rounded-xl
+          hover:scale-105
+          active:scale-95
+          transition-all
           disabled:opacity-50
+          disabled:hover:scale-100
         "
-        title="Connect Wallet"
       >
-        <Wallet size={24} />
+        Connect Wallet
       </button>
 
       <WalletModal key={modalKey} isOpen={isModalOpen} onClose={closeModal} />
