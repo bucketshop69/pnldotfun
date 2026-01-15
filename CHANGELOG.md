@@ -39,18 +39,6 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
   - Gasless transfers via Lazorkit paymaster
   - Traditional wallet transfers with normal gas fees
   - Design system aligned buttons and UI elements
-
-### Changed
-
-- Replaced old `ConnectWallet` component with new wallet component system
-- `WalletButton` now opens details modal when connected
-- Updated `PNLDOTFUN` logo on home page to use `pnl-green` for 'P' and `pnl-red` for 'L'
-
-### Planned
-
-- [x] Wallet connection (Lazorkit passkey + traditional wallets)
-- [x] Custom wallet modal with split view
-- [x] Wallet details modal with gasless USDC transfer
 - **Gasless Raydium Swap (004)**
   - `SwapForm` - Integrated Raydium swap UI in Wallet Details Modal
   - Dual Mode: Gasless swaps for Lazorkit, normal gas swaps for traditional wallets
@@ -58,6 +46,23 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
   - Live quote fetching with price impact calculation
   - Token flip functionality and automatic ATA handling
   - Support for `LEGACY` transactions via Raydium Trade API
+  - Compact UI matching design system (removed inline selectors, matched TransferForm styling)
+
+### Changed
+
+- Replaced old `ConnectWallet` component with new wallet component system
+- `WalletButton` now opens details modal when connected
+- Updated `PNLDOTFUN` logo on home page to use `pnl-green` for 'P' and `pnl-red` for 'L'
+- Updated site title to `PNL.FUN`
+- `WalletButton` now shows text "Connect Wallet" instead of icon when disconnected
+- Added muted hint text below connected wallet button
+- `PasskeySection` now shows three icons (Face, Fingerprint, Phone) to represent passkey methods
+
+### Planned
+
+- [x] Wallet connection (Lazorkit passkey + traditional wallets)
+- [x] Custom wallet modal with split view
+- [x] Wallet details modal with gasless USDC transfer
 - [x] Gasless Raydium swap (004)
 - [ ] Transaction parser (Jupiter swaps)
 - [ ] P&L card component (animated)
