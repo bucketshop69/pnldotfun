@@ -1,9 +1,10 @@
 "use client";
 
 import { WalletButton } from "@/components/wallet/WalletButton";
+import { AnimatedInput } from "@/components/AnimatedInput";
 
 /**
- * Home page with PNLDOTFUN logo, input field, and wallet button.
+ * Home page with PNLDOTFUN logo, animated input field, and wallet button.
  * Wallet button opens custom modal for connection.
  */
 export default function Home() {
@@ -12,9 +13,7 @@ export default function Home() {
       <h1 className="text-6xl md:text-8xl font-mono font-bold tracking-tighter text-text-primary">
         <span className="text-pnl-green">P</span>N<span className="text-pnl-red">L</span>DOTFUN
       </h1>
-      <input
-        type="text"
-        placeholder="What's your PnL?"
+      <AnimatedInput
         className="
           w-full max-w-lg h-16
           px-6
