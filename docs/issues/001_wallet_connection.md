@@ -7,6 +7,7 @@ Add wallet connection to PNLdotfun with both traditional wallets AND Lazorkit pa
 ## Why
 
 Users need to authenticate to:
+
 1. Save their P&L cards to a collection
 2. Access gasless transactions (via Lazorkit paymaster)
 3. Future: mint P&L as NFTs

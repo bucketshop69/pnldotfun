@@ -6,7 +6,7 @@ import {
     WalletProvider as SolanaWalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { registerLazorkitWallet } from "@lazorkit/wallet";
+import { registerLazorkitWallet, LazorkitProvider } from "@lazorkit/wallet";
 import { LAZORKIT_CONFIG, WALLET_CONFIG } from "@/lib/config";
 
 // Required for wallet-adapter UI
@@ -38,13 +38,19 @@ export function WalletProvider({ children }: WalletProviderProps) {
     const wallets = useMemo(() => [], []);
 
     return (
-        <ConnectionProvider endpoint={LAZORKIT_CONFIG.RPC_URL}>
-            <SolanaWalletProvider
-                wallets={wallets}
-                autoConnect={WALLET_CONFIG.autoConnect}
-            >
-                <WalletModalProvider>{children}</WalletModalProvider>
-            </SolanaWalletProvider>
-        </ConnectionProvider>
+        <LazorkitProvider
+            rpcUrl={LAZORKIT_CONFIG.RPC_URL}
+            portalUrl={LAZORKIT_CONFIG.PORTAL_URL}
+            paymasterConfig={LAZORKIT_CONFIG.PAYMASTER}
+        >
+            <ConnectionProvider endpoint={LAZORKIT_CONFIG.RPC_URL}>
+                <SolanaWalletProvider
+                    wallets={wallets}
+                    autoConnect={WALLET_CONFIG.autoConnect}
+                >
+                    <WalletModalProvider>{children}</WalletModalProvider>
+                </SolanaWalletProvider>
+            </ConnectionProvider>
+        </LazorkitProvider>
     );
 }

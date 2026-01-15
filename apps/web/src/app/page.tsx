@@ -1,7 +1,11 @@
 "use client";
 
-import { ConnectWallet } from "@/components/ConnectWallet";
+import { WalletButton } from "@/components/wallet/WalletButton";
 
+/**
+ * Home page with PNLDOTFUN logo, input field, and wallet button.
+ * Wallet button opens custom modal for connection.
+ */
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-primary gap-8 px-4">
@@ -11,9 +15,21 @@ export default function Home() {
       <input
         type="text"
         placeholder="What's your PnL?"
-        className="w-full max-w-lg h-16 px-6 text-xl font-mono bg-surface border border-white/10 rounded-2xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent transition-all"
+        className="
+          w-full max-w-lg h-16
+          px-6
+          text-xl font-mono
+          bg-surface
+          border border-white/10
+          rounded-2xl
+          text-text-primary
+          placeholder:text-text-muted
+          focus:outline-none focus:ring-2 focus:ring-accent
+          transition-all
+        "
       />
-      <ConnectWallet />
+      <WalletButton />
     </div>
   );
 }
+
