@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
-import { X, LogOut, Key, Wallet, ArrowRightLeft, RefreshCw } from "lucide-react";
+import { X, LogOut, Key, Wallet } from "lucide-react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWallet as useLazorkitWallet } from "@lazorkit/wallet";
 import { AddressDisplay } from "./AddressDisplay";
 import { BalanceDisplay } from "./BalanceDisplay";
 import { TransferForm } from "./TransferForm";
+import { SwapForm } from "./SwapForm";
 import { useBalances } from "./hooks/useBalances";
 
 type TabType = "transfer" | "swap";
@@ -193,12 +194,20 @@ export function WalletDetailsModal({ isOpen, onClose }: WalletDetailsModalProps)
               />
             )}
 
-            {activeTab === "swap" && (
+            {activeTab === "swap" && isLazorkitWallet && (
+              <SwapForm
+                walletPubkey={walletPubkey}
+                solBalance={sol}
+                usdcBalance={usdc}
+                onSwapComplete={refetch}
+              />
+            )}
+
+            {activeTab === "swap" && !isLazorkitWallet && (
               <div className="flex flex-col items-center justify-center h-[200px] text-center">
-                <RefreshCw size={32} className="text-text-muted mb-3" />
-                <p className="text-text-secondary font-medium">Swap Coming Soon</p>
+                <p className="text-text-secondary font-medium">Passkey Required</p>
                 <p className="text-sm text-text-muted mt-1">
-                  Token swaps via Raydium will be available in the next update.
+                  Gasless swaps are only available with Passkey wallets.
                 </p>
               </div>
             )}
