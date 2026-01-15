@@ -25,17 +25,32 @@ export function WalletList({ onSuccess }: WalletListProps) {
     async (walletName: string) => {
       setConnectingWallet(walletName);
       try {
-        select(walletName as any);
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // Find the wallet adapter
+        const wallet = wallets.find((w) => w.adapter.name === walletName);
+        if (!wallet) {
+          throw new Error(`Wallet ${walletName} not found`);
+        }
+        
+        // Select the wallet first
+        select(wallet.adapter.name);
+        
+        // Wait for selection to propagate
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        
+        // Now connect
         await connect();
         onSuccess();
-      } catch (error) {
-        console.error("Wallet connection failed:", error);
+      } catch (error: unknown) {
+        // Ignore user rejection errors
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (!errorMessage.includes("User rejected") && !errorMessage.includes("cancelled")) {
+          console.error("Wallet connection failed:", error);
+        }
       } finally {
         setConnectingWallet(null);
       }
     },
-    [select, connect, onSuccess]
+    [wallets, select, connect, onSuccess]
   );
 
   return (

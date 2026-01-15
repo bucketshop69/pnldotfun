@@ -3,29 +3,30 @@
 import { useState } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useWallet as useLazorkitWallet } from "@lazorkit/wallet";
-import { Wallet, LogOut } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { WalletModal } from "./WalletModal";
+import { WalletDetailsModal } from "./WalletDetailsModal";
 
 /**
  * Wallet button for the page.
- * - Disconnected: Shows wallet icon, opens modal on click
- * - Connected: Shows wallet icon + truncated address + disconnect
+ * - Disconnected: Shows wallet icon, opens connection modal on click
+ * - Connected: Shows wallet icon + truncated address, opens details modal on click
  * 
  * Supports both Solana Wallet Adapter and Lazorkit connections.
  */
 export function WalletButton() {
   // Solana Wallet Adapter state
-  const { publicKey, wallet, disconnect, connecting } = useWallet();
+  const { publicKey, wallet, connecting } = useWallet();
   
   // Lazorkit state
   const { 
     smartWalletPubkey, 
     isConnected: isLazorkitConnected, 
-    disconnect: lazorkitDisconnect 
   } = useLazorkitWallet();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalKey, setModalKey] = useState(0);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   const openModal = () => {
     setModalKey((k) => k + 1); // Force remount to reset state
@@ -33,28 +34,23 @@ export function WalletButton() {
   };
   const closeModal = () => setIsModalOpen(false);
 
+  const openDetails = () => setIsDetailsOpen(true);
+  const closeDetails = () => setIsDetailsOpen(false);
+
   // Check if connected via either method
   const isConnected = publicKey || isLazorkitConnected;
   const displayAddress = publicKey?.toBase58() || smartWalletPubkey?.toBase58();
 
-  const handleDisconnect = async () => {
-    // Disconnect from both
-    if (publicKey) {
-      await disconnect();
-    }
-    if (isLazorkitConnected) {
-      await lazorkitDisconnect();
-    }
-  };
-
-  // Connected state
+  // Connected state - clicking opens details modal
   if (isConnected && displayAddress) {
     const truncatedAddress = `${displayAddress.slice(0, 4)}...${displayAddress.slice(-4)}`;
 
     return (
-      <div className="flex items-center gap-2">
-        {/* Wallet icon + Address */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-surface rounded-xl border border-white/10">
+      <>
+        <button
+          onClick={openDetails}
+          className="flex items-center gap-2 px-3 py-2 bg-surface rounded-xl border border-white/10 hover:border-accent/30 transition-colors cursor-pointer"
+        >
           {wallet?.adapter.icon ? (
             <img
               src={wallet.adapter.icon}
@@ -67,17 +63,10 @@ export function WalletButton() {
           <span className="font-mono text-sm text-text-primary">
             {truncatedAddress}
           </span>
-        </div>
-
-        {/* Disconnect button */}
-        <button
-          onClick={handleDisconnect}
-          className="p-2 text-text-muted hover:text-pnl-red transition-colors rounded-lg hover:bg-white/5"
-          title="Disconnect"
-        >
-          <LogOut size={18} />
         </button>
-      </div>
+
+        <WalletDetailsModal isOpen={isDetailsOpen} onClose={closeDetails} />
+      </>
     );
   }
 
@@ -105,3 +94,4 @@ export function WalletButton() {
     </>
   );
 }
+
