@@ -159,23 +159,23 @@ export function WalletDetailsModal({ isOpen, onClose }: WalletDetailsModalProps)
           />
 
           {/* Tabs */}
-          <div className="flex border border-white/10 rounded-xl overflow-hidden">
+          <div className="flex gap-2">
             <button
               onClick={() => setActiveTab("transfer")}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex-1 h-10 px-4 rounded-xl text-sm font-medium transition-all ${
                 activeTab === "transfer"
-                  ? "bg-accent text-white"
-                  : "text-text-muted hover:text-text-primary hover:bg-white/5"
+                  ? "bg-white text-primary hover:scale-[1.02] active:scale-100"
+                  : "bg-surface border border-white/10 text-text-muted hover:bg-elevated hover:text-text-primary"
               }`}
             >
               💸 Transfer
             </button>
             <button
               onClick={() => setActiveTab("swap")}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex-1 h-10 px-4 rounded-xl text-sm font-medium transition-all ${
                 activeTab === "swap"
-                  ? "bg-accent text-white"
-                  : "text-text-muted hover:text-text-primary hover:bg-white/5"
+                  ? "bg-white text-primary hover:scale-[1.02] active:scale-100"
+                  : "bg-surface border border-white/10 text-text-muted hover:bg-elevated hover:text-text-primary"
               }`}
             >
               🔄 Swap
@@ -209,7 +209,7 @@ export function WalletDetailsModal({ isOpen, onClose }: WalletDetailsModalProps)
         <div className="px-5 py-4 border-t border-white/10">
           <button
             onClick={handleDisconnect}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-pnl-red hover:bg-pnl-red/10 rounded-xl transition-colors"
+            className="w-full h-10 flex items-center justify-center gap-2 bg-surface border border-white/10 text-pnl-red rounded-xl hover:bg-pnl-red/10 hover:border-pnl-red/30 transition-colors"
           >
             <LogOut size={16} />
             <span className="font-medium">Disconnect</span>

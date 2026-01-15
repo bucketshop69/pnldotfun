@@ -217,9 +217,9 @@ export function TransferForm({
           <button
             onClick={handleSendClick}
             disabled={!canSubmit}
-            className="px-3 py-1.5 text-sm font-medium text-white bg-accent hover:bg-accent/80 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            className="h-8 px-4 text-sm font-medium bg-white text-primary rounded-lg hover:scale-[1.02] active:scale-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            💸 Send
+            Send
           </button>
         </div>
         {parsedAmount > usdcBalance && (

@@ -97,14 +97,14 @@ export function ConfirmTransferModal({
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 px-4 py-3 text-text-secondary bg-elevated hover:bg-white/10 rounded-xl font-medium transition-colors disabled:opacity-50"
+            className="flex-1 h-10 px-4 bg-surface border border-white/10 text-text-primary rounded-xl font-medium hover:bg-elevated transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className="flex-1 px-4 py-3 text-white bg-accent hover:bg-accent/80 rounded-xl font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="flex-1 h-10 px-4 bg-white text-primary rounded-xl font-medium hover:scale-[1.02] active:scale-100 transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
