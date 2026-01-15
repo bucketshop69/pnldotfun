@@ -194,22 +194,14 @@ export function WalletDetailsModal({ isOpen, onClose }: WalletDetailsModalProps)
               />
             )}
 
-            {activeTab === "swap" && isLazorkitWallet && (
+            {activeTab === "swap" && (
               <SwapForm
                 walletPubkey={walletPubkey}
                 solBalance={sol}
                 usdcBalance={usdc}
+                isLazorkitWallet={isLazorkitWallet}
                 onSwapComplete={refetch}
               />
-            )}
-
-            {activeTab === "swap" && !isLazorkitWallet && (
-              <div className="flex flex-col items-center justify-center h-[200px] text-center">
-                <p className="text-text-secondary font-medium">Passkey Required</p>
-                <p className="text-sm text-text-muted mt-1">
-                  Gasless swaps are only available with Passkey wallets.
-                </p>
-              </div>
             )}
           </div>
         </div>

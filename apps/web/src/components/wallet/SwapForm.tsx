@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, VersionedTransaction, Connection, TransactionMessage } from "@solana/web3.js";
 import { ArrowUpDown, ExternalLink, Loader2 } from "lucide-react";
 import { useWallet as useLazorkitWallet } from "@lazorkit/wallet";
+import { useWallet } from "@solana/wallet-adapter-react";
 import { 
   TOKENS, 
   TokenSymbol, 
@@ -17,22 +18,25 @@ import {
   formatPriceImpact,
   SwapQuoteResponse
 } from "@/lib/raydium";
+import { LAZORKIT_CONFIG } from "@/lib/config";
 
 interface SwapFormProps {
   walletPubkey: PublicKey;
   solBalance: number;
   usdcBalance: number;
+  isLazorkitWallet: boolean;
   onSwapComplete?: () => void;
 }
 
 /**
- * Gasless token swap form using Raydium DEX.
- * Supports SOL ↔ USDC swaps via Lazorkit paymaster.
+ * Token swap form using Raydium DEX.
+ * Supports gasless swaps for Lazorkit wallets, normal swaps for traditional wallets.
  */
 export function SwapForm({
   walletPubkey,
   solBalance,
   usdcBalance,
+  isLazorkitWallet,
   onSwapComplete,
 }: SwapFormProps) {
   const [inputToken, setInputToken] = useState<TokenSymbol>("SOL");
@@ -45,7 +49,8 @@ export function SwapForm({
   const [error, setError] = useState<string | null>(null);
   const [txSignature, setTxSignature] = useState<string | null>(null);
 
-  const { signAndSendTransaction } = useLazorkitWallet();
+  const { signAndSendTransaction: lazorkitSignAndSend } = useLazorkitWallet();
+  const { sendTransaction } = useWallet();
 
   // Get balance for current input token
   const inputBalance = inputToken === "SOL" ? solBalance : usdcBalance;
@@ -102,15 +107,6 @@ export function SwapForm({
     setQuoteResponse(null);
   };
 
-  // Handle max button
-  const handleMax = () => {
-    // Leave a small buffer for SOL (for potential future gas needs)
-    const maxAmount = inputToken === "SOL" 
-      ? Math.max(0, inputBalance - 0.01) 
-      : inputBalance;
-    setInputAmount(maxAmount.toString());
-  };
-
   // Execute swap
   const handleSwap = async () => {
     if (!canSwap || !quoteResponse) return;
@@ -132,20 +128,35 @@ export function SwapForm({
         throw new Error("Failed to build swap transaction");
       }
 
-      // Process for Lazorkit compatibility
-      const instructions = processTransactionForLazorkit(tx, walletPubkey);
+      let signature: string;
 
-      if (instructions.length === 0) {
-        throw new Error("No valid instructions after processing");
+      if (isLazorkitWallet) {
+        // Gasless swap via Lazorkit
+        const instructions = processTransactionForLazorkit(tx, walletPubkey);
+
+        if (instructions.length === 0) {
+          throw new Error("No valid instructions after processing");
+        }
+
+        signature = await lazorkitSignAndSend({
+          instructions,
+          transactionOptions: {
+            computeUnitLimit: 600_000,
+          },
+        });
+      } else {
+        // Normal swap via wallet adapter
+        const connection = new Connection(LAZORKIT_CONFIG.RPC_URL);
+        const { blockhash } = await connection.getLatestBlockhash();
+        
+        tx.recentBlockhash = blockhash;
+        tx.feePayer = walletPubkey;
+        
+        signature = await sendTransaction(tx, connection);
+        
+        // Wait for confirmation
+        await connection.confirmTransaction(signature, "confirmed");
       }
-
-      // Execute gasless swap via Lazorkit
-      const signature = await signAndSendTransaction({
-        instructions,
-        transactionOptions: {
-          computeUnitLimit: 600_000,
-        },
-      });
 
       setTxSignature(signature);
       setInputAmount("");
@@ -160,6 +171,7 @@ export function SwapForm({
       // Handle user cancellation
       if (
         errorMessage.toLowerCase().includes("cancel") ||
+        errorMessage.toLowerCase().includes("reject") ||
         errorMessage.toLowerCase().includes("signing failed")
       ) {
         setError(null);
@@ -174,44 +186,31 @@ export function SwapForm({
   };
 
   return (
-    <div className="space-y-4 pt-2">
+    <div className="space-y-2 pt-2">
       {/* Input Token */}
       <div className="space-y-1.5">
         <div className="flex justify-between">
-          <label className="text-sm text-text-muted">From</label>
+          <label className="text-sm text-text-muted">
+            {TOKENS[inputToken].icon} {inputToken}
+          </label>
           <span className="text-xs text-text-muted">
             Balance: {inputBalance.toFixed(inputToken === "SOL" ? 4 : 2)} {inputToken}
           </span>
         </div>
-        <div className="flex items-center gap-2 p-3 bg-elevated border border-white/10 rounded-xl">
-          <button
-            onClick={() => setInputToken(inputToken === "SOL" ? "USDC" : "SOL")}
-            className="flex items-center gap-2 px-3 py-1.5 bg-surface border border-white/10 rounded-lg text-sm font-medium text-text-primary hover:bg-white/5 transition-colors"
-          >
-            <span>{TOKENS[inputToken].icon}</span>
-            <span>{inputToken}</span>
-            <span className="text-text-muted">▼</span>
-          </button>
-          <input
-            type="number"
-            value={inputAmount}
-            onChange={(e) => setInputAmount(e.target.value)}
-            placeholder="0.00"
-            disabled={swapping}
-            className="flex-1 bg-transparent text-right text-text-primary font-mono text-lg placeholder:text-text-muted focus:outline-none disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          />
-          <button
-            onClick={handleMax}
-            disabled={swapping || inputBalance === 0}
-            className="px-2 py-1 text-xs font-medium text-accent hover:text-accent/80 transition-colors disabled:opacity-50"
-          >
-            MAX
-          </button>
-        </div>
+        <input
+          type="number"
+          value={inputAmount}
+          onChange={(e) => setInputAmount(e.target.value)}
+          placeholder="0.00"
+          disabled={swapping}
+          step="0.000001"
+          min="0"
+          className="w-full px-4 py-3 bg-elevated border border-white/10 rounded-xl text-text-primary font-mono text-sm placeholder:text-text-muted focus:outline-none focus:border-accent/50 disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        />
       </div>
 
       {/* Flip Button */}
-      <div className="flex justify-center">
+      <div className="flex justify-center py-1">
         <button
           onClick={handleFlip}
           disabled={swapping}
@@ -224,29 +223,21 @@ export function SwapForm({
       {/* Output Token */}
       <div className="space-y-1.5">
         <div className="flex justify-between">
-          <label className="text-sm text-text-muted">To</label>
+          <label className="text-sm text-text-muted">
+            {TOKENS[outputToken].icon} {outputToken}
+          </label>
           <span className="text-xs text-text-muted">
             Balance: {outputBalance.toFixed(outputToken === "SOL" ? 4 : 2)} {outputToken}
           </span>
         </div>
-        <div className="flex items-center gap-2 p-3 bg-elevated border border-white/10 rounded-xl">
-          <button
-            onClick={() => setOutputToken(outputToken === "SOL" ? "USDC" : "SOL")}
-            className="flex items-center gap-2 px-3 py-1.5 bg-surface border border-white/10 rounded-lg text-sm font-medium text-text-primary hover:bg-white/5 transition-colors"
-          >
-            <span>{TOKENS[outputToken].icon}</span>
-            <span>{outputToken}</span>
-            <span className="text-text-muted">▼</span>
-          </button>
-          <div className="flex-1 text-right font-mono text-lg text-text-primary">
-            {quoteLoading ? (
-              <span className="text-text-muted animate-pulse">Loading...</span>
-            ) : outputAmount ? (
-              <span>~{outputAmount}</span>
-            ) : (
-              <span className="text-text-muted">0.00</span>
-            )}
-          </div>
+        <div className="w-full px-4 py-3 bg-elevated border border-white/10 rounded-xl text-text-primary font-mono text-sm">
+          {quoteLoading ? (
+            <span className="text-text-muted animate-pulse">Loading...</span>
+          ) : outputAmount ? (
+            <span>~{outputAmount}</span>
+          ) : (
+            <span className="text-text-muted">0.00</span>
+          )}
         </div>
       </div>
 
@@ -264,23 +255,29 @@ export function SwapForm({
       <button
         onClick={handleSwap}
         disabled={!canSwap}
-        className="w-full h-12 bg-white text-primary font-medium rounded-xl hover:scale-[1.02] active:scale-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+        className="w-full h-10 bg-white text-primary font-medium rounded-xl hover:scale-[1.02] active:scale-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
       >
         {swapping ? (
           <>
-            <Loader2 size={18} className="animate-spin" />
+            <Loader2 size={16} className="animate-spin" />
             Swapping...
           </>
         ) : quoteLoading ? (
           "Getting Quote..."
-        ) : (
+        ) : isLazorkitWallet ? (
           "Swap (Gasless)"
+        ) : (
+          "Swap"
         )}
       </button>
 
-      {/* Gasless Info */}
+      {/* Gas Info */}
       <p className="text-xs text-text-muted text-center">
-        ✨ <span className="text-pnl-green">Gasless</span> — Lazorkit pays all fees
+        {isLazorkitWallet ? (
+          <>✨ <span className="text-pnl-green">Gasless</span> — Lazorkit pays all fees</>
+        ) : (
+          <>💳 <span className="text-text-secondary">Normal gas fees apply</span></>
+        )}
       </p>
 
       {/* Devnet Warning */}

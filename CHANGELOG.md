@@ -50,7 +50,14 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 - [x] Wallet connection (Lazorkit passkey + traditional wallets)
 - [x] Custom wallet modal with split view
 - [x] Wallet details modal with gasless USDC transfer
-- [ ] Gasless Raydium swap (004)
+- **Gasless Raydium Swap (004)**
+  - `SwapForm` - Integrated Raydium swap UI in Wallet Details Modal
+  - Dual Mode: Gasless swaps for Lazorkit, normal gas swaps for traditional wallets
+  - `raydium.ts` - Raydium API integration helpers for quotes and transactions
+  - Live quote fetching with price impact calculation
+  - Token flip functionality and automatic ATA handling
+  - Support for `LEGACY` transactions via Raydium Trade API
+- [x] Gasless Raydium swap (004)
 - [ ] Transaction parser (Jupiter swaps)
 - [ ] P&L card component (animated)
 - [ ] Share/export functionality
