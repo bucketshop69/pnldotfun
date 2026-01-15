@@ -44,6 +44,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Replaced old `ConnectWallet` component with new wallet component system
 - `WalletButton` now opens details modal when connected
+- Updated `PNLDOTFUN` logo on home page to use `pnl-green` for 'P' and `pnl-red` for 'L'
 
 ### Planned
 

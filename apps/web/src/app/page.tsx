@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-primary gap-8 px-4">
       <h1 className="text-6xl md:text-8xl font-mono font-bold tracking-tighter text-text-primary">
-        PNLDOTFUN
+        <span className="text-pnl-green">P</span>N<span className="text-pnl-red">L</span>DOTFUN
       </h1>
       <input
         type="text"
