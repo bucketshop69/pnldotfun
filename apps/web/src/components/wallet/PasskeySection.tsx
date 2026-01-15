@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useWallet as useLazorkitWallet } from "@lazorkit/wallet";
-import { Fingerprint } from "lucide-react";
+import { Fingerprint, ScanFace, Smartphone } from "lucide-react";
 
 interface PasskeySectionProps {
   onSuccess: () => void;
@@ -80,9 +80,17 @@ export function PasskeySection({ onSuccess }: PasskeySectionProps) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Icon */}
-      <div className="w-14 h-14 flex items-center justify-center rounded-2xl bg-accent/10 text-accent mb-4">
-        <Fingerprint size={28} />
+      {/* Icons */}
+      <div className="flex gap-3 mb-6">
+        <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/10 text-accent">
+          <ScanFace size={24} />
+        </div>
+        <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/10 text-accent">
+          <Fingerprint size={24} />
+        </div>
+        <div className="w-12 h-12 flex items-center justify-center rounded-2xl bg-accent/10 text-accent">
+          <Smartphone size={24} />
+        </div>
       </div>
 
       {/* Title */}
